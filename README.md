@@ -5,4 +5,5 @@ The theory is best browsed and edited in
 [Isabelle](https://isabelle.in.tum.de/), but
 [`./browser_info/index.html`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/nano-o/Isabelle-Semitopology/master/browser_info/Semi-Topology.html)
 contains an HTML rendering of the theory.
+There is also a PDF rendering [here](./browser_info/document.pdf).
 
