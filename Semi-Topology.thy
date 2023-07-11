@@ -31,6 +31,7 @@ lemma "open {}"
 section "Section 2"
 
 lemma l_2_3_2:
+  \<comment> \<open>If every member of @{term S} has an open neighborhood in @{term S}, then @{term S} is open.\<close>
   fixes S
   shows "(\<forall> p \<in> S . \<exists> O . open O \<and> p \<in> O \<and> O \<subseteq> S) \<longleftrightarrow> open S"
 proof -
@@ -382,6 +383,57 @@ lemma cascade:
   shows "S \<subseteq> closure O" using closure_increasing
   by (smt (verit, best) assms int_commutes closure_def mem_Collect_eq semitopology.topen_def semitopology_axioms subsetD subsetI transitive_def)
 
+
+section "Appendix B.2"
+
+lemma l_b_2_1:
+  fixes p p'
+  shows "intertwined p p' = 
+    (\<forall> C C' . closed C \<and> closed C' \<and> C \<union> C' = UNIV \<longrightarrow> {p,p'} \<subseteq> C \<or> {p,p'} \<subseteq> C')"
+proof -
+  have "intertwined p p' = 
+    (\<forall> C C' . closed C \<and> closed C' \<and> p \<notin> C \<and> p' \<notin> C' \<longrightarrow> C \<union> C' \<noteq> UNIV)"
+  proof -
+    { fix C C'
+      assume "intertwined p p'" and "closed C" and "closed C'"
+        and "p \<notin> C" and "p' \<notin> C'"
+      have "C \<union> C' \<noteq> UNIV"
+      proof -
+        \<comment> \<open>If @{term "C \<union> C' = UNIV"} were the case, then @{term "p \<in> -C'"} and @{term "p' \<in> -C"}.
+            However both are open and disjoint, thus @{term p} and @{term p'} cannot be intertwined.\<close>
+        { assume "C \<union> C' = UNIV"
+          have "open (-C)" and "open (-C')" 
+            using \<open>closed C\<close> and \<open>closed C'\<close> complement_closed_is_open by auto
+          moreover have "p \<in> -C" and "p' \<in> -C'"
+            using \<open>p \<notin> C\<close> and \<open>p' \<notin> C'\<close> by auto
+          moreover have "-C \<inter> -C' = {}"
+            using \<open>C \<union> C' = UNIV\<close>
+            by auto
+          ultimately
+          have False
+            using \<open>intertwined p p'\<close> def_3_6_1 intersects_def by fastforce }
+        thus ?thesis
+          by auto
+      qed }
+    moreover
+    { assume a0:"closed C \<and> closed C' \<and> p \<notin> C \<and> p' \<notin> C' \<longrightarrow> C \<union> C' \<noteq> UNIV" for C C'
+      have "intertwined p p'"
+      proof -
+        { fix O O'
+          assume "open O" and "open O'" and "p \<in> O" and "p' \<in> O'"
+          have "O int O'" \<comment> \<open>Here we just instantiate the assumption above with the complements of our open sets\<close>
+            using a0[of "-O" "-O'"]
+            using \<open>open O'\<close> \<open>open O\<close> \<open>p \<in> O\<close> \<open>p' \<in> O'\<close> complement_open_is_closed intersects_def by auto }
+        thus ?thesis 
+          using def_3_6_1 by auto
+      qed }
+    ultimately show ?thesis
+      by blast
+  qed
+  thus ?thesis
+    by blast
+qed
+   
 end
 
 section "Finding examples with Nitpick"
